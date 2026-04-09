@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espaço Neurofoco — Manual de Fluxos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .wrap {
+    font-family: 'DM Sans', sans-serif;
+    background: #FAF8F5;
+    min-height: 100vh;
+    padding: 32px 24px;
+    color: #3D2B1F;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .logo-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  .clinic-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #6B4C35;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1.5px solid #C8B89A;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #6B4C35;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .tab:hover { background: #E8DDD0; }
+  .tab.active {
+    background: #3D2B1F;
+    border-color: #3D2B1F;
+    color: #FFFFFF;
+  }
+
+  .flow-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #3D2B1F;
+    margin-bottom: 6px;
+  }
+
+  .flow-subtitle {
+    font-size: 13px;
+    color: #6B4C35;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  .flow-canvas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    position: relative;
+  }
+
+  .node {
+    width: 100%;
+    max-width: 480px;
+    background: #FFFFFF;
+    border: 1.5px solid #E8DDD0;
+    border-radius: 12px;
+    padding: 14px 18px;
+    position: relative;
+    transition: box-shadow 0.2s;
+  }
+
+  .node:hover {
+    box-shadow: 0 4px 20px rgba(61,43,31,0.08);
+  }
+
+  .node.start {
+    background: #3D2B1F;
+    border-color: #3D2B1F;
+  }
+
+  .node.start .node-label { color: #FFFFFF; }
+  .node.start .node-sublabel { color: #C8B89A; }
+
+  .node.decision {
+    background: #E8DDD0;
+    border-color: #C8B89A;
+    border-style: dashed;
+  }
+
+  .node.end-node {
+    background: #3D2B1F;
+    border-color: #3D2B1F;
+    border-radius: 40px;
+  }
+
+  .node.end-node .node-label { color: #FFFFFF; font-size: 13px; }
+
+  .node.highlight {
+    border-color: #6B4C35;
+    background: #FDF6EF;
+  }
+
+  .node-number {
+    font-size: 10px;
+    font-weight: 500;
+    color: #C8B89A;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .node-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #3D2B1F;
+    line-height: 1.4;
+  }
+
+  .node-sublabel {
+    font-size: 12px;
+    color: #6B4C35;
+    margin-top: 4px;
+    font-weight: 300;
+    line-height: 1.4;
+  }
+
+  .arrow {
+    width: 2px;
+    height: 24px;
+    background: #C8B89A;
+    margin: 0 auto;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .arrow::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #C8B89A;
+  }
+
+  .branch-wrap {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .branch {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .branch-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 10px;
+    margin-bottom: 0;
+  }
+
+  .branch-label.yes {
+    background: #E8F0EB;
+    color: #4A7C59;
+  }
+
+  .branch-label.no {
+    background: #FAECEB;
+    color: #C0392B;
+  }
+
+  .branch-label.neutral {
+    background: #E8DDD0;
+    color: #6B4C35;
+  }
+
+  .h-line {
+    width: 100%;
+    height: 1.5px;
+    background: #C8B89A;
+    margin: 12px 0 0 0;
+  }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    background: #E8DDD0;
+    color: #6B4C35;
+    font-weight: 400;
+  }
+
+  .tag.green { background: #E8F0EB; color: #4A7C59; }
+
+  .section-divider {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+  }
+
+  .divider-line { flex: 1; height: 1px; background: #E8DDD0; }
+  .divider-text {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #C8B89A;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .responsible-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    background: #E8DDD0;
+    color: #6B4C35;
+    padding: 2px 8px;
+    border-radius: 8px;
+    margin-top: 5px;
+    font-weight: 500;
+  }
+
+  /* Sub-tabs (area selector, perfil selector) */
+  .sub-selector {
+    max-width: 480px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .sub-selector-label {
+    font-size: 11px;
+    color: #6B4C35;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+  .sub-selector-btns {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .sub-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid #C8B89A;
+    background: transparent;
+    color: #6B4C35;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-transform: capitalize;
+  }
+  .sub-btn.active {
+    border-color: #3D2B1F;
+    background: #3D2B1F;
+    color: #FFFFFF;
+  }
+
+  /* Fade in animation */
+  .flow-canvas {
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="header">
+    <div class="logo-dot" style="background:#C8B89A"></div>
+    <div class="logo-dot" style="background:#6B4C35"></div>
+    <span class="clinic-name">Espaço Neurofoco — Manual de Fluxos</span>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="content"></div>
+</div>
+
+<script>
+const tabs = [
+  { id: "captacao", label: "Captação Inicial" },
+  { id: "avaliacao", label: "Avaliação Neuropsicológica" },
+  { id: "adulto", label: "Psicoterapia Adulto" },
+  { id: "infantil", label: "Psicoterapia Infantil" },
+  { id: "admin", label: "Rotinas Administrativas" },
+];
+
+let active = "captacao";
+let subState = { perfil: "adulto", area: "agenda" };
+
+// ── Helpers ──
+function arrow() {
+  return '<div class="arrow"></div>';
+}
+
+function node(cls, content, style) {
+  const s = style ? ` style="${style}"` : '';
+  return `<div class="node ${cls}"${s}>${content}</div>`;
+}
+
+function nodeN(num, label, sub, extra) {
+  return `${num ? `<div class="node-number">${num}</div>` : ''}
+    <div class="node-label">${label}</div>
+    ${sub ? `<div class="node-sublabel">${sub}</div>` : ''}
+    ${extra || ''}`;
+}
+
+function tagRow(tags) {
+  return `<div class="tag-row">${tags.map(t => {
+    if (typeof t === 'string') return `<span class="tag">${t}</span>`;
+    return `<span class="tag" style="${t.style || ''}">${t.text}</span>`;
+  }).join('')}</div>`;
+}
+
+function badge(text) {
+  return `<div class="responsible-badge">${text}</div>`;
+}
+
+function divider(text) {
+  return `<div class="section-divider"><div class="divider-line"></div><span class="divider-text">${text}</span><div class="divider-line"></div></div>`;
+}
+
+function branchWrap(left, right) {
+  return `<div class="branch-wrap">
+    <div class="branch">${left}</div>
+    <div class="branch">${right}</div>
+  </div>`;
+}
+
+function bLabel(cls, text) {
+  return `<span class="branch-label ${cls}">${text}</span>`;
+}
+
+function fw(content, cls, style) {
+  cls = cls || '';
+  const s = style ? ` style="${style}"` : '';
+  return `<div class="node ${cls}"${s} style="max-width:480px;width:100%;${style || ''}">${content}</div>`;
+}
+
+function fwn(cls, style) {
+  return (cls || '') + '" style="max-width:480px;width:100%;' + (style || '');
+}
+
+// ── Flows ──
+
+function flowCaptacao() {
+  return `<div class="flow-canvas">
+    <div class="flow-title">Captação e Atendimento Inicial</div>
+    <div class="flow-subtitle">Do primeiro contato ao início da avaliação</div>
+
+    <div class="node start" style="max-width:480px;width:100%">
+      <div class="node-number">Entrada</div>
+      <div class="node-label">Paciente chega à clínica</div>
+      ${tagRow(['Indicação médica (maioria)','Busca Google','Parceria Anhanguera'])}
+    </div>
+    ${arrow()}
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">01</div>
+      <div class="node-label">Primeiro contato via WhatsApp</div>
+      <div class="node-sublabel">Iniciado pelo paciente, responsável ou pais</div>
+      ${badge('📱 Canal: WhatsApp')}
+    </div>
+    ${arrow()}
+    <div class="node decision" style="max-width:480px;width:100%">
+      <div class="node-number">02 — Verificação</div>
+      <div class="node-label">Paciente sabe o que é a avaliação?</div>
+    </div>
+    ${branchWrap(
+      arrow() + bLabel('no','Não sabe') + arrow() + '<div class="node" style="width:100%"><div class="node-label">Explicar o processo</div><div class="node-sublabel">Paciente escolhe: vídeo ou texto explicativo</div></div>',
+      arrow() + bLabel('yes','Já sabe') + arrow() + '<div class="node" style="width:100%"><div class="node-label">Abrir espaço para dúvidas</div><div class="node-sublabel">Responder perguntas sobre o processo</div></div>'
+    )}
+    ${arrow()}
+    <div class="node decision" style="max-width:480px;width:100%">
+      <div class="node-number">03 — Decisão</div>
+      <div class="node-label">Paciente pergunta sobre valores?</div>
+      <div class="node-sublabel">Valores são apresentados somente quando solicitados</div>
+    </div>
+    ${arrow()}
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">04</div>
+      <div class="node-label">Apresentação de valores (texto via WhatsApp)</div>
+      ${tagRow(['R$ 2.400 — 10x no cartão','R$ 2.295 — PIX/dinheiro 3x','R$ 2.200 — à vista'])}
+      <div class="node-sublabel" style="margin-top:6px">PDF de apoio disponível (geralmente não lido)</div>
+    </div>
+    ${arrow()}
+    <div class="node decision" style="max-width:480px;width:100%">
+      <div class="node-number">05 — Decisão</div>
+      <div class="node-label">Paciente decide fechar?</div>
+      <div class="node-sublabel">Principal objeção: valor percebido como alto</div>
+    </div>
+    ${branchWrap(
+      arrow() + bLabel('no','Não fecha') + arrow() + '<div class="node" style="width:100%;background:#FAECEB;border-color:#E8C0BC"><div class="node-label" style="color:#C0392B">Follow-up / Arquivar</div><div class="node-sublabel">Registrar na planilha de não-conversão</div></div>',
+      arrow() + bLabel('yes','Fecha') + arrow() + '<div class="node" style="width:100%;background:#E8F0EB;border-color:#A8C8B0"><div class="node-label" style="color:#4A7C59">Confirmar interesse</div><div class="node-sublabel">Agendar triagem gratuita</div></div>'
+    )}
+    ${arrow()}
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">06</div>
+      <div class="node-label">Triagem gratuita e remota</div>
+      <div class="node-sublabel">Conduzida por Paulo — identificar demandas iniciais</div>
+      ${badge('👤 Responsável: Paulo César')}
+    </div>
+    ${arrow()}
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">07</div>
+      <div class="node-label">Agendamento da anamnese</div>
+      <div class="node-sublabel">Definição de data e horário da 1ª sessão</div>
+    </div>
+    ${arrow()}
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">08</div>
+      <div class="node-label">Cadastro no PsicoManager</div>
+      <div class="node-sublabel">Registrar paciente no sistema com data e horário confirmados</div>
+      ${badge('💻 Sistema: PsicoManager')}
+    </div>
+    ${arrow()}
+    <div class="node end-node" style="max-width:480px;width:100%;text-align:center">
+      <div class="node-label">✓ Paciente pronto para iniciar a Avaliação Neuropsicológica</div>
+    </div>
+  </div>`;
+}
+
+function flowAvaliacao() {
+  const p = subState.perfil;
+  const isCrianca = p === 'criança';
+  return `<div class="flow-canvas">
+    <div class="flow-title">Avaliação Neuropsicológica</div>
+    <div class="flow-subtitle">Da 1ª sessão à entrega do laudo — duração média: 2 meses</div>
+
+    <div class="sub-selector">
+      <div class="sub-selector-label">Perfil do paciente</div>
+      <div class="sub-selector-btns">
+        <button class="sub-btn ${p==='adulto'?'active':''}" onclick="subState.perfil='adulto';render()">adulto</button>
+        <button class="sub-btn ${p==='criança'?'active':''}" onclick="subState.perfil='criança';render()">criança</button>
+      </div>
+    </div>
+
+    <div class="node start" style="max-width:480px;width:100%">
+      <div class="node-number">Início</div>
+      <div class="node-label">Paciente cadastrado — 1ª sessão agendada</div>
+      <div class="node-sublabel" style="color:#C8B89A">Pagamento integral realizado na primeira sessão</div>
+    </div>
+    ${arrow()}
+    ${divider('Fase 1 — Anamnese')}
+
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">01 — 1ª Sessão</div>
+      <div class="node-label">Anamnese Clínica</div>
+      <div class="node-sublabel">Entrevista inicial com coleta de história clínica, saúde e contexto do paciente.${isCrianca ? ' Realizada com pais ou responsáveis.' : ''} Orienta a seleção da bateria de testes.</div>
+      ${badge('👥 Paulo César + estagiário')}
+    </div>
+    ${arrow()}
+    ${divider('Fase 2 — Testagem')}
+
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">02 — Logo após a anamnese</div>
+      <div class="node-label">Abrir pasta física do paciente</div>
+      <div class="node-sublabel">Criar pasta identificada com o nome do paciente. Imprimir apenas os testes da primeira sessão — não imprimir toda a bateria de uma vez. A cada semana, imprimir somente os testes da sessão seguinte e adicionar à pasta.</div>
+      ${tagRow([{text:'⚠️ Imprimir sessão a sessão',style:'background:#FAECEB;color:#C0392B'},'Adicionar checklist de testes no Trello'])}
+      <div class="node-sublabel" style="margin-top:6px">Na supervisão de sexta-feira: equipe decide estagiário responsável pelo caso</div>
+      ${badge('👤 Dalila abre card · Estagiário preenche checklist')}
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">03</div>
+      <div class="node-label">Montagem da bateria personalizada</div>
+      <div class="node-sublabel">Selecionada com base nas hipóteses clínicas e áreas a investigar</div>
+      ${tagRow(['Inteligência (QI)','Atenção','Memória','Funções Executivas','Personalidade','Humor e comportamento'].concat(isCrianca ? ['Leitura e escrita','TDAH / Autismo'] : []))}
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">04 — Sessões 2 a ${isCrianca ? '8' : '6'}</div>
+      <div class="node-label">Sessões de testagem</div>
+      <div class="node-sublabel">Aplicação dos instrumentos. Quantidade pode variar conforme desempenho e cooperação do paciente.</div>
+      ${tagRow([isCrianca ? '6 a 8 sessões' : '~6 sessões', '40–50 min cada'])}
+      ${badge('👥 Estagiários (aplicação) — sob supervisão de Paulo')}
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">04 — Paralelo às sessões</div>
+      <div class="node-label">Envio de questionários online</div>
+      <div class="node-sublabel">${isCrianca ? 'Preenchidos pelos pais, responsáveis e/ou professores' : 'Preenchidos pelo próprio paciente ou informante próximo'}</div>
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">05 — Quando necessário</div>
+      <div class="node-label">Conversa com outros profissionais</div>
+      <div class="node-sublabel">${isCrianca ? 'Escola, pedagogos, médicos, fonoaudiólogos' : 'Médicos, psiquiatras, outros terapeutas'}</div>
+    </div>
+    ${arrow()}
+    ${divider('Fase 3 — Elaboração do Laudo')}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">06</div>
+      <div class="node-label">Redação e montagem do laudo</div>
+      <div class="node-sublabel">Estagiários redigem o laudo com base na correção dos instrumentos e nas observações clínicas</div>
+      ${badge('✏️ Estagiários (redação)')}
+    </div>
+    ${arrow()}
+
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">07</div>
+      <div class="node-label">Revisão e correção do laudo</div>
+      <div class="node-sublabel">Paulo revisa, corrige e assina o relatório neuropsicológico final</div>
+      ${badge('👤 Paulo César — neuropsicólogo responsável')}
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">08</div>
+      <div class="node-label">Discussão clínica em equipe</div>
+      <div class="node-sublabel">Avaliação por pares — análise conjunta dos resultados por mais de um profissional</div>
+      ${badge('👥 Equipe Neurofoco')}
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%;border-left:3px solid #C8B89A">
+      <div class="node-number">⏱ Prazo</div>
+      <div class="node-label">10 a 15 dias após última sessão</div>
+      <div class="node-sublabel">Período para confecção, revisão e discussão do laudo</div>
+    </div>
+    ${arrow()}
+    ${divider('Fase 4 — Devolutiva')}
+
+    <div class="node decision" style="max-width:480px;width:100%">
+      <div class="node-number">09 — Agendamento</div>
+      <div class="node-label">Definir formato da devolutiva</div>
+    </div>
+    ${branchWrap(
+      arrow() + bLabel('neutral','Presencial') + arrow() + '<div class="node" style="width:100%"><div class="node-label">Sessão presencial</div><div class="node-sublabel">Na clínica</div></div>',
+      arrow() + bLabel('neutral','Online') + arrow() + '<div class="node" style="width:100%"><div class="node-label">Sessão remota</div><div class="node-sublabel">Via videochamada</div></div>'
+    )}
+    ${arrow()}
+
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">10 — Sessão de Devolutiva</div>
+      <div class="node-label">Apresentação oral dos resultados</div>
+      <div class="node-sublabel">Apresentação de cada seção do laudo, esclarecimento de dúvidas e orientação sobre os próximos passos.${isCrianca ? ' Feita com os responsáveis.' : ''}</div>
+      ${badge(isCrianca ? '👨‍👩‍👧 Paciente + responsáveis' : '👤 Paciente')}
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">11</div>
+      <div class="node-label">Entrega do laudo + plano de tratamento</div>
+      <div class="node-sublabel">Documento entregue ao paciente ou responsável, com encaminhamentos personalizados</div>
+      ${tagRow([{text:'Psicoterapia',style:'background:#E8F0EB;color:#4A7C59'},{text:'Psiquiatria',style:'background:#E8F0EB;color:#4A7C59'},{text:'Fonoaudiologia',style:'background:#E8F0EB;color:#4A7C59'}].concat(isCrianca ? [{text:'Suporte escolar',style:'background:#E8F0EB;color:#4A7C59'}] : []))}
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">12 — Pós-laudo (antes da devolutiva)</div>
+      <div class="node-label">Pasta "Laudos para Correção"</div>
+      <div class="node-sublabel">Testes e laudo redigido são arquivados na pasta para que Paulo cheque os instrumentos e revise o material</div>
+      ${badge('📂 Pasta: Laudos para Correção')}
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">13 — Pós-devolutiva</div>
+      <div class="node-label">Transferência para caixa de arquivo</div>
+      <div class="node-sublabel">Após a devolutiva, o prontuário é movido para a caixa de arquivo físico no armário da clínica</div>
+      ${badge('📁 Armário da clínica')}
+    </div>
+    ${arrow()}
+
+    <div class="node decision" style="max-width:480px;width:100%">
+      <div class="node-number">14</div>
+      <div class="node-label">Caixa de arquivo lotada?</div>
+    </div>
+    ${branchWrap(
+      arrow() + bLabel('no','Não') + arrow() + '<div class="node" style="width:100%"><div class="node-label">Manter na clínica</div><div class="node-sublabel">Aguardar próximos laudos</div></div>',
+      arrow() + bLabel('yes','Sim') + arrow() + '<div class="node" style="width:100%;background:#FDF6EF;border-color:#C8B89A"><div class="node-label">Paulo leva para arquivamento externo</div><div class="node-sublabel">Guarda domiciliar sob responsabilidade do neuropsicólogo</div>' + badge('👤 Paulo César') + '</div>'
+    )}
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%;border-left:3px solid #C8B89A;background:#FDFAF0">
+      <div class="node-number">⚖️ CFP — Resolução 001/2009</div>
+      <div class="node-label">Prazo mínimo de guarda: 5 anos</div>
+      <div class="node-sublabel">Prontuários e documentos de avaliação psicológica devem ser mantidos por no mínimo 5 anos após encerramento do caso</div>
+    </div>
+    ${arrow()}
+
+    <div class="node end-node" style="max-width:480px;width:100%;text-align:center">
+      <div class="node-label">✓ Avaliação concluída — paciente com diagnóstico e plano de cuidado</div>
+    </div>
+  </div>`;
+}
+
+function flowAdulto() {
+  return `<div class="flow-canvas">
+    <div class="flow-title">Atendimento Psicológico — Adulto</div>
+    <div class="flow-subtitle">Da sessão experimental à alta terapêutica</div>
+
+    <div class="node start" style="max-width:480px;width:100%">
+      <div class="node-number">Início</div>
+      <div class="node-label">Paciente agenda a sessão experimental</div>
+      <div class="node-sublabel" style="color:#C8B89A">Sessão experimental é cobrada normalmente</div>
+    </div>
+    ${arrow()}
+    ${divider('Fase 1 — Acolhimento')}
+
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">01 — Sessão Experimental</div>
+      <div class="node-label">Sessão de acolhimento inicial</div>
+      <div class="node-sublabel">Apresentação entre paciente e psicólogo, escuta da demanda e avaliação de vínculo</div>
+      ${badge('👤 Psicólogo responsável pelo caso')}
+    </div>
+    ${arrow()}
+
+    <div class="node decision" style="max-width:480px;width:100%">
+      <div class="node-number">02</div>
+      <div class="node-label">Paciente decide continuar?</div>
+    </div>
+    ${branchWrap(
+      arrow() + bLabel('no','Não') + arrow() + '<div class="node" style="width:100%;background:#FAECEB;border-color:#E8C0BC"><div class="node-label" style="color:#C0392B">Encerramento</div><div class="node-sublabel">Registrar na planilha de não-conversão</div></div>',
+      arrow() + bLabel('yes','Sim') + arrow() + '<div class="node" style="width:100%;background:#E8F0EB;border-color:#A8C8B0"><div class="node-label" style="color:#4A7C59">Formalizar contrato</div><div class="node-sublabel">Físico ou digital</div></div>'
+    )}
+    ${arrow()}
+    ${divider('Fase 2 — Contrato e Pagamento')}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">03</div>
+      <div class="node-label">Assinatura do contrato terapêutico</div>
+      <div class="node-sublabel">Cláusulas definidas com base na experiência coletiva da equipe, revisadas pelo Paulo em reunião de equipe. Digital: paciente lê e confirma concordância por escrito. Físico: assinatura obrigatória.</div>
+      ${tagRow(['Digital: aceite escrito','Físico: assinatura obrigatória'])}
+    </div>
+    ${arrow()}
+
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">04 — Pagamento</div>
+      <div class="node-label">Pacotes de 4 sessões</div>
+      <div class="node-sublabel">Pagamentos organizados em pacotes. Sessões não realizadas podem virar crédito — combinar com o psicólogo</div>
+      ${tagRow(['4 sessões por pacote','Falta justificada com antecedência','Reposição dentro do mês'])}
+    </div>
+    ${arrow()}
+    ${divider('Fase 3 — Processo Terapêutico')}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">05</div>
+      <div class="node-label">Sessões regulares</div>
+      <div class="node-sublabel">Condução do processo terapêutico. PsicoManager envia lembrete automático ao paciente 24h antes de cada sessão.</div>
+      ${tagRow(['Frequência semanal','ou quinzenal','🔔 Lembrete automático 24h antes'])}
+      ${badge('👤 A critério do psicólogo responsável')}
+    </div>
+    ${arrow()}
+
+    <div class="node decision" style="max-width:480px;width:100%">
+      <div class="node-number">06 — Avaliação contínua</div>
+      <div class="node-label">Necessidade de encaminhamento?</div>
+      <div class="node-sublabel">A critério clínico do psicólogo responsável</div>
+    </div>
+    ${branchWrap(
+      arrow() + bLabel('no','Não') + arrow() + '<div class="node" style="width:100%"><div class="node-label">Continuar processo</div><div class="node-sublabel">Manter sessões regulares</div></div>',
+      arrow() + bLabel('yes','Sim') + arrow() + '<div class="node" style="width:100%"><div class="node-label">Encaminhamento</div>' + tagRow(['Psiquiatria','Neurologia','Outros']) + '</div>'
+    )}
+    ${arrow()}
+    ${divider('Fase 4 — Alta')}
+
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">07</div>
+      <div class="node-label">Avaliação de alta</div>
+      <div class="node-sublabel">A critério do psicólogo — quando as metas terapêuticas forem alcançadas. Processo de finalização conduzido individualmente por cada profissional</div>
+      ${badge('👤 Psicólogo responsável')}
+    </div>
+    ${arrow()}
+
+    <div class="node end-node" style="max-width:480px;width:100%;text-align:center">
+      <div class="node-label">✓ Alta terapêutica — processo encerrado</div>
+    </div>
+  </div>`;
+}
+
+function flowInfantil() {
+  return `<div class="flow-canvas">
+    <div class="flow-title">Atendimento Psicológico — Infantil</div>
+    <div class="flow-subtitle">Do contato dos responsáveis à alta da criança</div>
+
+    <div class="node start" style="max-width:480px;width:100%">
+      <div class="node-number">Início</div>
+      <div class="node-label">Responsável agenda o atendimento</div>
+      <div class="node-sublabel" style="color:#C8B89A">Pais ou responsáveis legais realizam todo o contato inicial</div>
+    </div>
+    ${arrow()}
+    ${divider('Fase 1 — Anamnese com Responsáveis')}
+
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">01 — Conta no pacote</div>
+      <div class="node-label">Sessão de anamnese com os pais</div>
+      <div class="node-sublabel">Coleta de história do desenvolvimento, queixas, contexto familiar e escolar. Sessão cobrada normalmente — conta como sessão do pacote</div>
+      ${badge('👥 Psicólogo + responsáveis (sem a criança)')}
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">02</div>
+      <div class="node-label">Assinatura do contrato terapêutico</div>
+      <div class="node-sublabel">Assinado pelos responsáveis legais. Digital: aceite escrito é suficiente. Físico: assinatura obrigatória.</div>
+      ${tagRow(['Digital: aceite escrito','Físico: assinatura obrigatória'])}
+    </div>
+    ${arrow()}
+
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">03 — Pagamento</div>
+      <div class="node-label">Pacotes de 4 sessões</div>
+      <div class="node-sublabel">Pagamento em pacotes. Faltas justificadas com antecedência podem virar crédito — combinar com o psicólogo</div>
+      ${tagRow(['4 sessões por pacote','Reposição dentro do mês'])}
+    </div>
+    ${arrow()}
+    ${divider('Fase 2 — Processo Terapêutico')}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">04</div>
+      <div class="node-label">Sessões com a criança</div>
+      <div class="node-sublabel">Condução do processo terapêutico. PsicoManager envia lembrete automático ao responsável 24h antes de cada sessão.</div>
+      ${tagRow(['Frequência semanal ou quinzenal','🔔 Lembrete automático 24h antes'])}
+      ${badge('👤 Psicólogo responsável')}
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">05 — Conta como sessão</div>
+      <div class="node-label">Devolutivas periódicas aos responsáveis</div>
+      <div class="node-sublabel">Periodicidade definida pelo psicólogo. Apresentação de resultados e alinhamento com os pais. Conta como sessão do pacote</div>
+      ${badge('👥 Psicólogo + responsáveis')}
+    </div>
+    ${arrow()}
+
+    <div class="node" style="max-width:480px;width:100%">
+      <div class="node-number">06 — Quando necessário</div>
+      <div class="node-label">Articulação com a escola</div>
+      <div class="node-sublabel">Relatórios escolares, entrevista com professores ou outros profissionais que acompanham a criança (fonoaudiólogo, terapeuta ocupacional, etc.)</div>
+    </div>
+    ${arrow()}
+
+    <div class="node decision" style="max-width:480px;width:100%">
+      <div class="node-number">07 — Avaliação contínua</div>
+      <div class="node-label">Indicação de avaliação neuropsicológica?</div>
+      <div class="node-sublabel">A critério do psicólogo</div>
+    </div>
+    ${branchWrap(
+      arrow() + bLabel('no','Não') + arrow() + '<div class="node" style="width:100%"><div class="node-label">Continuar psicoterapia</div></div>',
+      arrow() + bLabel('yes','Sim') + arrow() + '<div class="node" style="width:100%"><div class="node-label">Encaminhar para avaliação neuropsicológica</div><div class="node-sublabel">Segue Fluxo 2</div></div>'
+    )}
+    ${arrow()}
+    ${divider('Fase 3 — Alta')}
+
+    <div class="node highlight" style="max-width:480px;width:100%">
+      <div class="node-number">08</div>
+      <div class="node-label">Avaliação de alta com responsáveis</div>
+      <div class="node-sublabel">Quando o psicólogo avalia que as metas foram alcançadas. Processo de finalização compartilhado com os responsáveis</div>
+      ${badge('👥 Psicólogo + responsáveis')}
+    </div>
+    ${arrow()}
+
+    <div class="node end-node" style="max-width:480px;width:100%;text-align:center">
+      <div class="node-label">✓ Alta terapêutica — processo encerrado com responsáveis</div>
+    </div>
+  </div>`;
+}
+
+function flowAdmin() {
+  const a = subState.area;
+  let areaContent = '';
+
+  if (a === 'agenda') {
+    areaContent = `
+      <div class="node start" style="max-width:480px;width:100%">
+        <div class="node-number">Responsabilidades de Agenda</div>
+        <div class="node-label">Quem controla o quê</div>
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%">
+        <div class="node-number">Avaliações Neuropsicológicas</div>
+        <div class="node-label">Dalila agenda sessões, horários e salas</div>
+        <div class="node-sublabel">Também auxilia Paulo, Ana e Fabrício na organização dos atendimentos</div>
+        ${badge('👤 Dalila Ramos')}
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%">
+        <div class="node-number">Psicoterapia</div>
+        <div class="node-label">Carol e Rodrigo gerenciam suas próprias agendas</div>
+        <div class="node-sublabel">Psicólogos clínicos são responsáveis por seus horários de atendimento</div>
+        ${badge('👤 Caroline Laia · Rodrigo (novo)')}
+      </div>
+      ${arrow()}
+      <div class="node highlight" style="max-width:480px;width:100%">
+        <div class="node-number">Sistema</div>
+        <div class="node-label">PsicoManager</div>
+        <div class="node-sublabel">Cadastro de pacientes, agendamento de sessões e controle de salas</div>
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%">
+        <div class="node-number">Trello — Atualizar após cada atendimento</div>
+        <div class="node-label">Organização dos pacientes em avaliação</div>
+        <div class="node-sublabel">Lista de testes a aplicar deve ser atualizada após todos os atendimentos. Acompanhamento do status de cada caso pela equipe</div>
+        ${badge('👥 Toda a equipe de avaliação')}
+      </div>`;
+  } else if (a === 'financeiro') {
+    areaContent = `
+      <div class="node start" style="max-width:480px;width:100%">
+        <div class="node-number">Controle Financeiro</div>
+        <div class="node-label">Pagamentos e recibos</div>
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%">
+        <div class="node-number">PIX ou maquininha física</div>
+        <div class="node-label">Recebimento presencial</div>
+        <div class="node-sublabel">Pagamentos realizados presencialmente na clínica</div>
+        ${badge('👤 Dalila Ramos')}
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%">
+        <div class="node-number">Link de crédito</div>
+        <div class="node-label">Pagamento remoto via link</div>
+        <div class="node-sublabel">Geração e envio do link de cobrança</div>
+        ${badge('👤 Paulo César')}
+      </div>
+      ${arrow()}
+      <div class="node highlight" style="max-width:480px;width:100%">
+        <div class="node-number">Emissão de recibos / notas</div>
+        <div class="node-label">Setor financeiro responsável</div>
+        <div class="node-sublabel">Emissão de comprovantes e documentação fiscal</div>
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%;border-left:3px solid #C8B89A;background:#FDFAF0">
+        <div class="node-number">⚠️ Crítico — Relatório mensal</div>
+        <div class="node-label">Marcar atendimentos como realizados no PsicoManager</div>
+        <div class="node-sublabel">Paulo gera relatório mensal para calcular pagamento dos estagiários e psicólogos. Atendimentos não marcados como feitos não entram no cálculo. Toda a equipe é responsável por manter isso atualizado.</div>
+        ${tagRow([{text:'⚠️ Marcar imediatamente após cada sessão',style:'background:#FAECEB;color:#C0392B'}])}
+        ${badge('👥 Toda a equipe · Relatório: Paulo César')}
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%;border-left:3px solid #C8B89A">
+        <div class="node-number">⚠️ Atenção</div>
+        <div class="node-label">Avaliação: pagamento na 1ª sessão</div>
+        <div class="node-sublabel">O valor integral da avaliação neuropsicológica deve ser recebido na primeira sessão</div>
+      </div>`;
+  } else if (a === 'prontuarios') {
+    areaContent = `
+      <div class="node start" style="max-width:480px;width:100%">
+        <div class="node-number">Prontuários Físicos</div>
+        <div class="node-label">Protocolo de organização e guarda</div>
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%">
+        <div class="node-number">Durante a avaliação</div>
+        <div class="node-label">Pasta "Laudos para Correção"</div>
+        <div class="node-sublabel">Testes aplicados e laudo redigido ficam nesta pasta até a revisão de Paulo</div>
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%">
+        <div class="node-number">Pós-devolutiva</div>
+        <div class="node-label">Caixa de arquivo — armário da clínica</div>
+        <div class="node-sublabel">Organização em ordem alfabética</div>
+        ${badge('📁 Armário físico na clínica')}
+      </div>
+      ${arrow()}
+      <div class="node decision" style="max-width:480px;width:100%">
+        <div class="node-number">Caixa lotada?</div>
+        <div class="node-label">Capacidade da caixa atingida</div>
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%">
+        <div class="node-label">Paulo leva para arquivamento domiciliar</div>
+        ${badge('👤 Paulo César')}
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%;border-left:3px solid #C8B89A;background:#FDFAF0">
+        <div class="node-number">⚖️ CFP — Resolução 001/2009</div>
+        <div class="node-label">Guarda mínima de 5 anos</div>
+        <div class="node-sublabel">Prontuários devem ser mantidos por no mínimo 5 anos após encerramento do caso</div>
+      </div>`;
+  } else if (a === 'comunicacao') {
+    areaContent = `
+      <div class="node start" style="max-width:480px;width:100%">
+        <div class="node-number">Comunicação Interna</div>
+        <div class="node-label">Canais e responsabilidades</div>
+      </div>
+      ${arrow()}
+      <div class="node highlight" style="max-width:480px;width:100%">
+        <div class="node-number">Canal principal</div>
+        <div class="node-label">Grupo de WhatsApp da equipe</div>
+        <div class="node-sublabel">Comunicações do dia a dia, avisos e alinhamentos rápidos</div>
+        ${tagRow([{text:'⚠️ Responder sempre',style:'background:#E8F0EB;color:#4A7C59'}])}
+      </div>
+      ${arrow()}
+      <div class="node highlight" style="max-width:480px;width:100%">
+        <div class="node-number">Gestão de casos</div>
+        <div class="node-label">Trello</div>
+        <div class="node-sublabel">Dalila abre um card por paciente após a anamnese, indicando perfil (adulto ou infantil). Na supervisão de sexta-feira, a equipe decide o estagiário responsável — que deve adicionar o checklist de testes necessários e solicitar a Dalila qualquer documento adicional (anamnese, questionários, etc.)</div>
+        ${tagRow([{text:'⚠️ Atualizar após cada atendimento',style:'background:#FDF6EF;color:#6B4C35'},'Card: adulto ou infantil','Checklist de testes'])}
+        ${badge('👤 Dalila abre · Estagiário responsável preenche')}
+      </div>
+      ${arrow()}
+      <div class="node" style="max-width:480px;width:100%">
+        <div class="node-number">Revisões de contrato e equipe</div>
+        <div class="node-label">Reunião de equipe com Paulo</div>
+        <div class="node-sublabel">Paulo reúne a equipe para revisar cláusulas contratuais e discutir a experiência clínica de cada profissional</div>
+        ${badge('👤 Liderado por Paulo César')}
+      </div>`;
+  }
+
+  const areas = [
+    {id:'agenda', label:'Agenda'},
+    {id:'financeiro', label:'Financeiro'},
+    {id:'prontuarios', label:'Prontuários'},
+    {id:'comunicacao', label:'Comunicação Interna'},
+  ];
+
+  return `<div class="flow-canvas">
+    <div class="flow-title">Rotinas Administrativas</div>
+    <div class="flow-subtitle">Operação diária da clínica — Espaço Neurofoco</div>
+    <div class="sub-selector">
+      <div class="sub-selector-label">Área</div>
+      <div class="sub-selector-btns">
+        ${areas.map(ar => `<button class="sub-btn ${a===ar.id?'active':''}" onclick="subState.area='${ar.id}';render()">${ar.label}</button>`).join('')}
+      </div>
+    </div>
+    ${areaContent}
+  </div>`;
+}
+
+// ── Render ──
+
+function render() {
+  // Tabs
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = tabs.map(t =>
+    `<button class="tab ${active === t.id ? 'active' : ''}" onclick="setTab('${t.id}')">${t.label}</button>`
+  ).join('');
+
+  // Content
+  const content = document.getElementById('content');
+  switch (active) {
+    case 'captacao': content.innerHTML = flowCaptacao(); break;
+    case 'avaliacao': content.innerHTML = flowAvaliacao(); break;
+    case 'adulto': content.innerHTML = flowAdulto(); break;
+    case 'infantil': content.innerHTML = flowInfantil(); break;
+    case 'admin': content.innerHTML = flowAdmin(); break;
+  }
+}
+
+function setTab(id) {
+  active = id;
+  render();
+}
+
+// Init
+render();
+</script>
+</body>
+</html>

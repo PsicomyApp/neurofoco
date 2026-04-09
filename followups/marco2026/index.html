@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espaço Neurofoco — Follow-Up Março 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F8FA;
+    --surface: #FFFFFF;
+    --border: #E8EBF0;
+    --border-light: #F1F3F6;
+    --text-primary: #1A1D23;
+    --text-secondary: #5F6672;
+    --text-muted: #9BA2AE;
+    --green: #22A06B;
+    --green-bg: #E6F4ED;
+    --red: #DE350B;
+    --red-bg: #FFECEB;
+    --amber: #E5A100;
+    --amber-bg: #FFF7E0;
+    --blue: #0065FF;
+    --blue-bg: #E6F0FF;
+    --purple: #6554C0;
+    --purple-bg: #EEE9FC;
+    --teal: #008DA6;
+    --teal-bg: #E3F5F8;
+    --slate: #6B778C;
+    --slate-bg: #F0F1F4;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page-wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .clinic-name {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .page-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 18px 0 4px;
+    letter-spacing: -0.02em;
+  }
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+
+  .carnival-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--amber-bg);
+    border: 1px solid #F5DFA0;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #6B5900;
+    font-weight: 400;
+    margin-bottom: 24px;
+    line-height: 1.55;
+  }
+  .carnival-note strong { font-weight: 600; }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    transition: box-shadow 0.15s;
+  }
+  .kpi-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .kpi-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .kpi-value {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin-top: 3px;
+  }
+  .kpi-bar {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 10px;
+    background: var(--border-light);
+    overflow: hidden;
+  }
+  .kpi-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: box-shadow 0.15s;
+  }
+  .chart-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .chart-card.full { grid-column: 1 / -1; }
+  .chart-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+  .chart-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+
+  .detail-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .detail-table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+  }
+  .detail-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-primary);
+  }
+  .detail-table tr:hover td { background: #F8F9FB; }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+  .tag-green  { background: var(--green-bg);  color: #106B42; }
+  .tag-red    { background: var(--red-bg);    color: #BF2600; }
+  .tag-amber  { background: var(--amber-bg);  color: #6B5900; }
+  .tag-blue   { background: var(--blue-bg);   color: #0747A6; }
+  .tag-purple { background: var(--purple-bg); color: #403294; }
+  .tag-slate  { background: var(--slate-bg);  color: #505F79; }
+
+  @media (max-width: 600px) {
+    .chart-grid { grid-template-columns: 1fr; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .page-title { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <div class="header">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="6" cy="10" r="4" fill="#9BA2AE"/><circle cx="14" cy="10" r="4" fill="#5F6672"/></svg>
+    <span class="clinic-name">Espaço Neurofoco</span>
+  </div>
+
+  <div class="page-title">Follow-Up — Março 2026</div>
+  <div class="page-subtitle">Análise consolidada de contatos, conversões e perfil de demanda</div>
+
+  <div class="carnival-note">
+    <span>⚠️</span>
+    <span><strong>Efeito Carnaval:</strong> Março apresenta volume reduzido na 1ª semana. Nenhum contato registrado entre 1–5/03. A recuperação acontece a partir da 3ª semana.</span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Total de contatos</div>
+      <div class="kpi-value" style="color:var(--text-primary)">19</div>
+      <div class="kpi-sub">100% via WhatsApp</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%;background:var(--blue)"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Agendaram</div>
+      <div class="kpi-value" style="color:var(--green)">5</div>
+      <div class="kpi-sub">26,3% de conversão</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:26.3%;background:var(--green)"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Sem resposta</div>
+      <div class="kpi-value" style="color:var(--red)">7</div>
+      <div class="kpi-sub">36,8% perdidos</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:36.8%;background:var(--red)"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Em análise</div>
+      <div class="kpi-value" style="color:var(--amber)">6</div>
+      <div class="kpi-sub">31,6% pendentes</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:31.6%;background:var(--amber)"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Recusou</div>
+      <div class="kpi-value" style="color:var(--slate)">1</div>
+      <div class="kpi-sub">5,3%</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:5.3%;background:var(--slate)"></div></div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">Origem do Contato</div>
+      <div class="chart-sub">Consolidado por canal de entrada</div>
+      <canvas id="chartOrigem"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Queixa Principal</div>
+      <div class="chart-sub">Agrupamento por demanda clínica</div>
+      <canvas id="chartQueixa"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Materiais Enviados</div>
+      <div class="chart-sub">Folder, vídeo explicativo e informação de valores</div>
+      <canvas id="chartMateriais"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Status do Follow-Up</div>
+      <div class="chart-sub">Resultado consolidado dos contatos</div>
+      <canvas id="chartStatus"></canvas>
+    </div>
+    <div class="chart-card full">
+      <div class="chart-title">Contatos por Semana</div>
+      <div class="chart-sub">Distribuição ao longo do mês — impacto pós-Carnaval na Semana 1</div>
+      <canvas id="chartTimeline"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Contatos por Responsável</div>
+      <div class="chart-sub">Distribuição entre Paulo e Dalila</div>
+      <canvas id="chartResp"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Perfil Etário</div>
+      <div class="chart-sub">Criança (≤12) · Adolescente (13–17) · Adulto (18+)</div>
+      <canvas id="chartIdade"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-card full" style="overflow-x:auto">
+    <div class="chart-title">Detalhamento — Todos os Contatos</div>
+    <div class="chart-sub">19 registros de março 2026</div>
+    <table class="detail-table">
+      <thead><tr><th>Data</th><th>Paciente</th><th>Idade</th><th>Responsável</th><th>Origem</th><th>Queixa</th><th>Folder</th><th>Vídeo</th><th>Valor</th><th>Status</th></tr></thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const SEM = { green:'#22A06B', red:'#DE350B', amber:'#E5A100', blue:'#0065FF', purple:'#6554C0', teal:'#008DA6', slate:'#6B778C', grey1:'#B3BAC5', grey2:'#DFE1E6' };
+const CAT = ['#0065FF','#00A3BF','#6554C0','#22A06B','#E5A100','#DE350B','#8993A4','#36B37E'];
+
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#5F6672';
+
+const data = [
+  {date:'06/03',patient:'Isabela Lima (mãe)',age:8,resp:'Paulo Siqueira',origin:'Médico',queixa:'TDAH',folder:'Não',video:'Sim',valor:'Sim',status:'Não respondeu'},
+  {date:'06/03',patient:'Andrea Fernandes (mãe)',age:5,resp:'Dalila Ramos',origin:'Indicação',queixa:'Orientação Escolar',folder:'Não',video:'Sim',valor:'Sim',status:'Analisando'},
+  {date:'11/03',patient:'Ronia',age:null,resp:'Paulo Siqueira',origin:'Médico',queixa:'TDAH',folder:'Sim',video:'Sim',valor:'Sim',status:'Não respondeu'},
+  {date:'11/03',patient:'Iago Morais',age:20,resp:'Paulo Siqueira',origin:'Médico',queixa:'TEA',folder:'Sim',video:'Sim',valor:'Sim',status:'Analisando'},
+  {date:'13/03',patient:'Barbara Cristina',age:null,resp:'Dalila Ramos',origin:'Outro',queixa:'Borderline',folder:'Não',video:'Sim',valor:'Sim',status:'Não respondeu'},
+  {date:'13/03',patient:'Erik Botelho',age:21,resp:'Dalila Ramos',origin:'Médico',queixa:'TEA',folder:'Sim',video:'Não',valor:'Sim',status:'Não respondeu'},
+  {date:'16/03',patient:'Mariana Reis (mãe)',age:9,resp:'Paulo Siqueira',origin:'Médico',queixa:'TDAH',folder:'Não',video:'Não',valor:'Sim',status:'Não respondeu'},
+  {date:'17/03',patient:'Amanda (mãe)',age:12,resp:'Dalila Ramos',origin:'Outro',queixa:'TDAH/TOD',folder:'Não',video:'Sim',valor:'Sim',status:'Analisando'},
+  {date:'18/03',patient:'Ryan',age:21,resp:'Paulo Siqueira',origin:'Google',queixa:'Não Informado',folder:'Sim',video:'Não',valor:'Sim',status:'Agendou'},
+  {date:'18/03',patient:'Cleuza',age:null,resp:'Dalila Ramos',origin:'Google',queixa:'Desatenção / Exaustão',folder:'Não',video:'Não',valor:'Sim',status:'Agendou'},
+  {date:'19/03',patient:'Franciele (mãe)',age:13,resp:'Dalila Ramos',origin:'Indicação',queixa:'TDAH',folder:'Sim',video:'Sim',valor:'Sim',status:'Agendou'},
+  {date:'20/03',patient:'Jacquicilane (mãe)',age:7,resp:'Dalila Ramos',origin:'Indicação',queixa:'TDAH',folder:'Não',video:'Sim',valor:'Sim',status:'Agendou'},
+  {date:'23/03',patient:'Filipi',age:null,resp:'Dalila Ramos',origin:'Outro',queixa:'TEA',folder:'Não',video:'Não',valor:'Sim',status:'Recusou'},
+  {date:'24/03',patient:'Ingrid (mãe)',age:2,resp:'Paulo Siqueira',origin:'Outro',queixa:'TEA',folder:'Não',video:'Não',valor:'Sim',status:'Agendou'},
+  {date:'25/03',patient:'Delcia',age:30,resp:'Paulo Siqueira',origin:'Outro',queixa:'TEA e DI',folder:'Não',video:'Não',valor:'Sim',status:'Não respondeu'},
+  {date:'26/03',patient:'Natalia',age:null,resp:'Dalila Ramos',origin:'Outro',queixa:'Não Informado',folder:'Não',video:'Sim',valor:'Sim',status:'Analisando'},
+  {date:'26/03',patient:'Maíra',age:33,resp:'Dalila Ramos',origin:'Outro',queixa:'TEA e Bipolaridade',folder:'Sim',video:'Não',valor:'Sim',status:'Não respondeu'},
+  {date:'26/03',patient:'Maíra',age:null,resp:'Dalila Ramos',origin:'Outro',queixa:'Não Informado',folder:'Sim',video:'Não',valor:'Sim',status:'Analisando'},
+  {date:'31/03',patient:'Roberta (mãe)',age:7,resp:'Paulo Siqueira',origin:'Indicação',queixa:'Não Informado',folder:'Não',video:'Sim',valor:'Sim',status:'Analisando'},
+];
+
+function count(arr, key) { const m = {}; arr.forEach(d => { const v = d[key]||'Não informado'; m[v]=(m[v]||0)+1; }); return m; }
+
+function normalizeQueixa(q) {
+  q = (q||'').trim();
+  if (/tdah/i.test(q) && !/tea/i.test(q)) return 'TDAH (inclui TOD)';
+  if (/tea/i.test(q) && !/tdah/i.test(q)) return 'TEA (inclui comorbidades)';
+  if (/borderline|bipolar/i.test(q)) return 'Saúde Mental Adulto';
+  if (/desaten/i.test(q)||/exaust/i.test(q)) return 'Desatenção / Exaustão';
+  if (/escolar/i.test(q)) return 'Orientação Escolar';
+  if (/não informado/i.test(q)||/nao informado/i.test(q)||q==='') return 'Não Informado';
+  return q;
+}
+
+// 1 — Origem
+const origemMap = count(data,'origin');
+const origemColors = {'Médico':SEM.blue,'Indicação':SEM.teal,'Google':SEM.green,'Outro':SEM.grey1};
+new Chart(document.getElementById('chartOrigem'),{type:'doughnut',data:{labels:Object.keys(origemMap),datasets:[{data:Object.values(origemMap),backgroundColor:Object.keys(origemMap).map(k=>origemColors[k]||SEM.grey1),borderColor:'#FFF',borderWidth:2.5}]},options:{responsive:true,cutout:'60%',plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true,pointStyle:'circle',font:{size:11}}}}}});
+
+// 2 — Queixa
+const queixaMap = {}; data.forEach(d=>{const k=normalizeQueixa(d.queixa);queixaMap[k]=(queixaMap[k]||0)+1;});
+const qs = Object.entries(queixaMap).sort((a,b)=>b[1]-a[1]);
+new Chart(document.getElementById('chartQueixa'),{type:'bar',data:{labels:qs.map(e=>e[0]),datasets:[{data:qs.map(e=>e[1]),backgroundColor:qs.map((_,i)=>CAT[i%CAT.length]),borderRadius:6,barThickness:24}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#F1F3F6'}},y:{grid:{display:false}}}}});
+
+// 3 — Materiais
+const fS=data.filter(d=>d.folder==='Sim').length,vS=data.filter(d=>d.video==='Sim').length,vaS=data.filter(d=>d.valor==='Sim').length;
+new Chart(document.getElementById('chartMateriais'),{type:'bar',data:{labels:['Folder','Vídeo','Valor informado'],datasets:[{label:'Enviado',data:[fS,vS,vaS],backgroundColor:SEM.green,borderRadius:6},{label:'Não enviado',data:[19-fS,19-vS,19-vaS],backgroundColor:SEM.grey2,borderRadius:6}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true,pointStyle:'circle'}}},scales:{x:{grid:{display:false},stacked:true},y:{beginAtZero:true,ticks:{stepSize:5},grid:{color:'#F1F3F6'},stacked:true}}}});
+
+// 4 — Status
+const statusMap=count(data,'status');
+const stC={'Agendou':SEM.green,'Analisando':SEM.amber,'Não respondeu':SEM.red,'Recusou':SEM.slate};
+new Chart(document.getElementById('chartStatus'),{type:'doughnut',data:{labels:Object.keys(statusMap),datasets:[{data:Object.values(statusMap),backgroundColor:Object.keys(statusMap).map(k=>stC[k]||SEM.grey1),borderColor:'#FFF',borderWidth:2.5}]},options:{responsive:true,cutout:'60%',plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true,pointStyle:'circle'}}}}});
+
+// 5 — Timeline
+const weeks={'Sem 1 (1–9)':0,'Sem 2 (10–16)':0,'Sem 3 (17–23)':0,'Sem 4 (24–31)':0};
+data.forEach(d=>{const day=parseInt(d.date);if(day<=9)weeks['Sem 1 (1–9)']++;else if(day<=16)weeks['Sem 2 (10–16)']++;else if(day<=23)weeks['Sem 3 (17–23)']++;else weeks['Sem 4 (24–31)']++;});
+new Chart(document.getElementById('chartTimeline'),{type:'bar',data:{labels:Object.keys(weeks),datasets:[{label:'Contatos',data:Object.values(weeks),backgroundColor:['#F1F3F6','#B3D4FF','#4C9AFF',SEM.blue],borderRadius:8,barThickness:44}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{afterLabel:ctx=>ctx.dataIndex===0?'⚠️ Impacto pós-Carnaval':''}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{stepSize:2},grid:{color:'#F1F3F6'}}}}});
+
+// 6 — Responsável
+const respMap=count(data,'resp');
+new Chart(document.getElementById('chartResp'),{type:'doughnut',data:{labels:Object.keys(respMap),datasets:[{data:Object.values(respMap),backgroundColor:[SEM.blue,SEM.teal],borderColor:'#FFF',borderWidth:2.5}]},options:{responsive:true,cutout:'60%',plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true,pointStyle:'circle'}}}}});
+
+// 7 — Faixa Etária
+const faixas={'Criança (≤12)':0,'Adolescente (13–17)':0,'Adulto (18+)':0,'Não informado':0};
+data.forEach(d=>{if(d.age===null)faixas['Não informado']++;else if(d.age<=12)faixas['Criança (≤12)']++;else if(d.age<=17)faixas['Adolescente (13–17)']++;else faixas['Adulto (18+)']++;});
+new Chart(document.getElementById('chartIdade'),{type:'bar',data:{labels:Object.keys(faixas),datasets:[{data:Object.values(faixas),backgroundColor:[SEM.blue,SEM.purple,SEM.teal,SEM.grey2],borderRadius:6,barThickness:28}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{stepSize:2},grid:{color:'#F1F3F6'}}}}});
+
+// Table
+const tbody=document.getElementById('tableBody');
+function statusTag(s){if(/agend/i.test(s))return`<span class="tag tag-green">${s}</span>`;if(/não resp/i.test(s))return`<span class="tag tag-red">${s}</span>`;if(/recus/i.test(s))return`<span class="tag tag-red">${s}</span>`;return`<span class="tag tag-amber">${s}</span>`;}
+function boolTag(v){return v==='Sim'?`<span class="tag tag-green">Sim</span>`:`<span class="tag tag-slate">Não</span>`;}
+function originTag(o){const c={'Médico':'tag-blue','Indicação':'tag-purple','Google':'tag-green','Outro':'tag-slate'};return`<span class="tag ${c[o]||'tag-slate'}">${o}</span>`;}
+data.forEach(d=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${d.date}</td><td>${d.patient}</td><td>${d.age!==null?d.age:'—'}</td><td>${d.resp.split(' ')[0]}</td><td>${originTag(d.origin)}</td><td>${normalizeQueixa(d.queixa)}</td><td>${boolTag(d.folder)}</td><td>${boolTag(d.video)}</td><td>${boolTag(d.valor)}</td><td>${statusTag(d.status)}</td>`;tbody.appendChild(tr);});
+</script>
+</body>
+</html>
