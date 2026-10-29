@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espaço Neurofoco — Follow-Up Psicoterapia pelo WhatsApp</title>
+<meta name="description" content="Análise da busca por psicoterapia pelo WhatsApp: interação, agendamento e acompanhamento dos contatos de agosto a outubro de 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F7F8FA; --surface: #FFFFFF; --border: #E8EBF0; --border-light: #F1F3F6;
+    --text-primary: #1A1D23; --text-secondary: #5F6672; --text-muted: #697180;
+    --green: #22A06B; --green-bg: #E6F4ED; --red: #DE350B; --red-bg: #FFECEB;
+    --amber: #E5A100; --amber-bg: #FFF7E0; --blue: #0065FF; --blue-bg: #E6F0FF;
+    --purple: #6554C0; --teal: #008DA6; --slate: #6B778C; --slate-bg: #F0F1F4;
+  }
+  body {
+    font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary);
+    min-height: 100vh; -webkit-font-smoothing: antialiased; line-height: 1.5;
+  }
+  .page-wrap { max-width: 1120px; margin: 0 auto; padding: 32px 24px 64px; }
+  .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .clinic-name { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); font-weight: 500; }
+  .back { color: var(--text-secondary); font-size: 12px; text-underline-offset: 3px; }
+  a:focus-visible, summary:focus-visible, .table-scroll:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+  .page-title { font-size: 26px; font-weight: 700; margin: 18px 0 4px; letter-spacing: -0.02em; line-height: 1.25; }
+  .page-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 4px; }
+  .period { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+  .analysis-note {
+    background: var(--amber-bg); border: 1px solid #F5DFA0; border-radius: 10px;
+    padding: 14px 16px; font-size: 13px; color: #6B5900; margin-bottom: 24px; line-height: 1.65;
+  }
+  .analysis-note strong { font-weight: 600; }
+  .kpi-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 24px; }
+  .kpi-card, .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; min-width: 0; }
+  .kpi-card { padding: 16px 18px; }
+  .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 500; margin-bottom: 6px; }
+  .kpi-value { font-size: 30px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+  .kpi-sub { font-size: 11px; color: var(--text-secondary); margin-top: 6px; }
+  .kpi-bar { height: 4px; border-radius: 2px; margin-top: 10px; background: var(--border-light); overflow: hidden; }
+  .kpi-bar-fill { height: 100%; border-radius: 2px; }
+  .chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .chart-card { padding: 20px; }
+  .chart-card.full { grid-column: 1 / -1; }
+  .chart-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .chart-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+  .chart-wrap { position: relative; height: 280px; }
+  .chart-wrap.funnel { height: 300px; }
+  .chart-wrap.timeline { height: 240px; }
+  .chart-note { font-size: 12px; color: var(--text-secondary); line-height: 1.65; margin-top: 14px; }
+  .chart-note strong { color: var(--text-primary); font-weight: 600; }
+  .chart-data { margin-top: 14px; }
+  summary { cursor: pointer; font-size: 12px; color: var(--text-secondary); padding: 4px 0; }
+  .table-scroll { overflow-x: auto; margin-top: 10px; }
+  .detail-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .detail-table th { text-align: left; padding: 9px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 500; border-bottom: 1px solid var(--border); background: var(--bg); }
+  .detail-table td { padding: 10px; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+  .detail-table tbody tr:hover { background: #F8F9FB; }
+  .detail-table .number { text-align: right; white-space: nowrap; }
+  .action-table { min-width: 760px; }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 500; white-space: nowrap; }
+  .tag-green { background: var(--green-bg); color: #106B42; }
+  .tag-amber { background: var(--amber-bg); color: #6B5900; }
+  .tag-slate { background: var(--slate-bg); color: #505F79; }
+  .insights { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+  .insight { padding-left: 12px; border-left: 3px solid var(--border); }
+  .insight h3 { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .insight p { font-size: 12px; color: var(--text-secondary); line-height: 1.65; }
+  .section-gap { margin-bottom: 24px; }
+  .method { margin-top: 24px; font-size: 12px; color: var(--text-secondary); }
+  .method p { margin-top: 10px; line-height: 1.65; }
+  .source { margin-top: 20px; font-size: 11px; color: var(--text-muted); }
+  .notice { margin-bottom: 20px; padding: 12px 16px; background: var(--blue-bg); border-radius: 10px; font-size: 13px; }
+  [hidden] { display: none !important; }
+  @media (max-width: 900px) { .kpi-row { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 600px) {
+    .page-wrap { padding: 24px 16px 40px; }
+    .header { align-items: flex-start; flex-wrap: wrap; }
+    .chart-grid, .insights { grid-template-columns: minmax(0, 1fr); }
+    .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .kpi-card { padding: 14px; }
+    .page-title { font-size: 20px; }
+    .chart-card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<main class="page-wrap">
+  <header>
+    <div class="header">
+      <div class="brand">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="6" cy="10" r="4" fill="#9BA2AE"/><circle cx="14" cy="10" r="4" fill="#5F6672"/></svg>
+        <span class="clinic-name">Espaço Neurofoco</span>
+      </div>
+      <a class="back" href="../">← Todos os follow-ups</a>
+    </div>
+    <h1 class="page-title">Follow-Up — Psicoterapia pelo WhatsApp</h1>
+    <p class="page-subtitle">Busca por atendimento, continuidade da interação e entrada na psicoterapia</p>
+    <p class="period">Contatos de 03/08 a 14/10/2026 · 16 registros preenchidos</p>
+  </header>
+
+  <div class="analysis-note">
+    <strong>Interação insuficiente para compreender a barreira.</strong> Em parte dos contatos, a conversa terminou após informar o valor, sem diálogo suficiente para conhecer a causa da interrupção. O ponto de atenção é como conduzir a conversa até um próximo passo e retomar os contatos. A interrupção após o preço, por si só, não identifica uma objeção financeira.
+  </div>
+
+  <section class="kpi-row" aria-label="Indicadores gerais">
+    <div class="kpi-card">
+      <h2 class="kpi-label">Contatos registrados</h2>
+      <div class="kpi-value">16</div>
+      <p class="kpi-sub">Busca por psicoterapia via WhatsApp</p>
+      <div class="kpi-bar" aria-hidden="true"><div class="kpi-bar-fill" style="width:100%;background:var(--blue)"></div></div>
+    </div>
+    <div class="kpi-card">
+      <h2 class="kpi-label">Agendaram</h2>
+      <div class="kpi-value" style="color:var(--teal)">5</div>
+      <p class="kpi-sub">31,3% dos 16 registros</p>
+      <div class="kpi-bar" aria-hidden="true"><div class="kpi-bar-fill" style="width:31.25%;background:var(--teal)"></div></div>
+    </div>
+    <div class="kpi-card">
+      <h2 class="kpi-label">1ª sessão registrada</h2>
+      <div class="kpi-value" style="color:var(--green)">4</div>
+      <p class="kpi-sub">4 dos 5 que agendaram</p>
+      <div class="kpi-bar" aria-hidden="true"><div class="kpi-bar-fill" style="width:80%;background:var(--green)"></div></div>
+    </div>
+    <div class="kpi-card">
+      <h2 class="kpi-label">Conversão registrada</h2>
+      <div class="kpi-value" style="color:var(--green)">25%</div>
+      <p class="kpi-sub">4 primeiras sessões / 16 registros</p>
+      <div class="kpi-bar" aria-hidden="true"><div class="kpi-bar-fill" style="width:25%;background:var(--green)"></div></div>
+    </div>
+    <div class="kpi-card">
+      <h2 class="kpi-label">Sem follow-up</h2>
+      <div class="kpi-value" style="color:var(--red)">8</div>
+      <p class="kpi-sub">66,7% dos 12 sem 1ª sessão</p>
+      <div class="kpi-bar" aria-hidden="true"><div class="kpi-bar-fill" style="width:66.6667%;background:var(--red)"></div></div>
+    </div>
+  </section>
+
+  <noscript><p class="notice">Os indicadores e a análise estão disponíveis nesta página. Ative o JavaScript para consultar os gráficos e suas tabelas de valores.</p></noscript>
+  <p id="chartUnavailable" class="notice" role="status" hidden>Os gráficos não puderam ser carregados. Consulte os números em “Ver valores” em cada cartão.</p>
+
+  <div class="chart-grid">
+    <section class="chart-card" aria-labelledby="funnelTitle">
+      <h2 class="chart-title" id="funnelTitle">Da busca à primeira sessão</h2>
+      <p class="chart-sub">Funil cumulativo pela etapa máxima registrada</p>
+      <div class="chart-wrap funnel"><canvas id="chartFunil" role="img" aria-labelledby="funnelTitle" aria-describedby="funnelNote"></canvas></div>
+      <p class="chart-note" id="funnelNote"><strong>A maior queda está entre preço e horário: 12 → 7.</strong> Cinco registros não avançaram para a conversa sobre agenda, uma redução de 41,7% nessa passagem.</p>
+      <details class="chart-data"><summary>Ver valores e avanço entre etapas</summary><div id="funnelData"></div></details>
+    </section>
+    <section class="chart-card" aria-labelledby="followupTitle">
+      <h2 class="chart-title" id="followupTitle">Retomada dos contatos sem sessão</h2>
+      <p class="chart-sub">Base: 12 registros sem primeira sessão registrada</p>
+      <div class="chart-wrap"><canvas id="chartFollowup" role="img" aria-labelledby="followupTitle" aria-describedby="followupNote"></canvas></div>
+      <p class="chart-note" id="followupNote"><strong>4 receberam follow-up e 1 respondeu.</strong> Nenhum desses quatro tem primeira sessão registrada. Sem datas das tentativas, o resultado não permite medir o efeito da retomada.</p>
+      <details class="chart-data"><summary>Ver valores</summary><div id="followupData"></div></details>
+    </section>
+    <section class="chart-card" aria-labelledby="barriersTitle">
+      <h2 class="chart-title" id="barriersTitle">O que sabemos sobre a interrupção</h2>
+      <p class="chart-sub">Base: 12 registros sem primeira sessão registrada</p>
+      <div class="chart-wrap"><canvas id="chartBarreiras" role="img" aria-labelledby="barriersTitle" aria-describedby="barriersNote"></canvas></div>
+      <p class="chart-note" id="barriersNote"><strong>9 casos sem causa identificada por interação insuficiente.</strong> São 4 motivos não ditos, 2 silêncios sem motivo informado e 3 campos em branco. Há ainda 1 cancelamento sem justificativa e 2 barreiras explícitas: horário e falta de vaga.</p>
+      <details class="chart-data"><summary>Ver valores</summary><div id="barriersData"></div></details>
+    </section>
+    <section class="chart-card" aria-labelledby="originTitle">
+      <h2 class="chart-title" id="originTitle">Origem e vínculo anterior</h2>
+      <p class="chart-sub">Categorias registradas na planilha · Base: 16 registros</p>
+      <div class="chart-wrap"><canvas id="chartOrigem" role="img" aria-labelledby="originTitle" aria-describedby="originNote"></canvas></div>
+      <p class="chart-note" id="originNote"><strong>As 4 primeiras sessões vieram de ex-pacientes ou indicação profissional.</strong> “Ex-paciente” identifica vínculo anterior, sem esclarecer o canal da nova busca. Outros 6 registros não têm origem identificada ou preenchida.</p>
+      <details class="chart-data"><summary>Ver valores</summary><div id="originData"></div></details>
+    </section>
+    <section class="chart-card" aria-labelledby="audienceTitle">
+      <h2 class="chart-title" id="audienceTitle">Público que procurou atendimento</h2>
+      <p class="chart-sub">Categorias de público da planilha · Base: 16 registros</p>
+      <div class="chart-wrap"><canvas id="chartPublico" role="img" aria-labelledby="audienceTitle" aria-describedby="audienceNote"></canvas></div>
+      <p class="chart-note" id="audienceNote"><strong>Os 5 contatos infantis ou adolescentes não chegaram ao agendamento.</strong> É um recorte para investigar condução e disponibilidade. A amostra é pequena para concluir uma causa comum.</p>
+      <details class="chart-data"><summary>Ver valores</summary><div id="audienceData"></div></details>
+    </section>
+    <section class="chart-card" aria-labelledby="timelineTitle">
+      <h2 class="chart-title" id="timelineTitle">Entradas por mês</h2>
+      <p class="chart-sub">Agrupamento pela data do contato · Agosto e outubro parciais</p>
+      <div class="chart-wrap timeline"><canvas id="chartTimeline" role="img" aria-labelledby="timelineTitle" aria-describedby="timelineNote"></canvas></div>
+      <p class="chart-note" id="timelineNote">As primeiras sessões estão associadas ao <strong>mês de entrada do contato</strong>, pois não há data da sessão. Os volumes não representam meses completos nem comprovam tendência de adesão.</p>
+      <details class="chart-data"><summary>Ver valores</summary><div id="timelineData"></div></details>
+    </section>
+  </div>
+
+  <section class="chart-card section-gap" aria-labelledby="gapsTitle">
+    <h2 class="chart-title" id="gapsTitle">Onde o atendimento precisa avançar</h2>
+    <p class="chart-sub">Pontos que se sobrepõem aos grupos acima, sem somá-los como novos contatos</p>
+    <div class="insights">
+      <div class="insight" style="border-color:var(--red)">
+        <h3>2 relatos de falta de retorno da clínica</h3>
+        <p>As observações descrevem uma consulta de disponibilidade de profissional e um pedido de horário melhor sem retorno. Distinguir quem precisa agir evita interpretar toda interrupção como silêncio da pessoa.</p>
+      </div>
+      <div class="insight" style="border-color:var(--amber)">
+        <h3>O preço pode encerrar a troca</h3>
+        <p>Enviar o valor não garante que houve diálogo suficiente para esclarecer dúvidas ou combinar o próximo passo. Não há recusa explícita por preço registrada. A barreira financeira permanece uma hipótese.</p>
+      </div>
+      <div class="insight" style="border-color:var(--blue)">
+        <h3>8 casos sem follow-up para revisar</h3>
+        <p>Verificar quais ainda admitem retomada, se existe algo a responder pela clínica e qual seria a próxima ação. A ausência de follow-up não significa que todos os contatos ainda estejam disponíveis para agendar.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="chart-card" aria-labelledby="detailTitle">
+    <h2 class="chart-title" id="detailTitle">Pontos de interrupção e acompanhamento</h2>
+    <p class="chart-sub">Grupos pela etapa máxima, sem sobreposição · As ações abaixo são propostas para revisão</p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Tabela de acompanhamento por etapa; role horizontalmente em telas pequenas">
+      <table class="detail-table action-table">
+        <thead><tr><th scope="col">Etapa máxima</th><th scope="col" class="number">Registros</th><th scope="col" class="number">Sem follow-up</th><th scope="col">Leitura do grupo</th><th scope="col">Próximo passo sugerido</th></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <p class="chart-note">O único registro que agendou e não chegou à primeira sessão relata <strong>cancelamento</strong>. Ele não foi classificado como falta sem aviso. Os 4 casos com primeira sessão ficam fora do denominador de follow-up.</p>
+  </section>
+
+  <details class="method">
+    <summary>Critérios de leitura e limites da base</summary>
+    <p><strong>Interação e causa.</strong> A leitura de interação insuficiente considera o esclarecimento da clínica sobre os contatos sem motivo conhecido. O comportamento observado, a responsabilidade pela próxima ação e a barreira declarada precisam ser acompanhados separadamente.</p>
+    <p><strong>Funil e conversão.</strong> O funil usa a etapa máxima informada, sem histórico de cada transição. Conversão significa primeira sessão registrada dividida pelo total de registros. Não mede continuidade ou retenção na psicoterapia.</p>
+    <p><strong>Coerência dos dados.</strong> Há 2 conflitos entre etapa e registro de preço: um agendamento com preço em branco e um envio de preço ainda na etapa de informações. A contagem de 12 pelo campo de preço coincide com a do funil, mas corresponde a conjuntos diferentes.</p>
+    <p><strong>Unicidade.</strong> Uma identificação abreviada se repete. Isso não comprova duplicidade de pessoa. As taxas usam os 16 registros, sem excluir linhas ou afirmar que são pessoas únicas confirmadas.</p>
+    <p><strong>Acompanhamento.</strong> Não há datas do último contato, das tentativas ou da primeira sessão, nem tempo de resposta e próxima ação. Não é possível calcular atrasos ou atribuir a conversão ao follow-up.</p>
+    <p><strong>Apresentação.</strong> Os gráficos mostram contagens agregadas. Os recortes por público e origem descrevem esta amostra, sem comparação conclusiva entre canais ou profissionais.</p>
+  </details>
+  <p class="source">Fonte: Controle_WhatsApp_Psicoterapia.xlsx, aba Registro, 16 registros preenchidos. Contexto da interação informado pela clínica. Período dos contatos: 03/08 a 14/10/2026.</p>
+</main>
+
+<script>
+// Somente contagens agregadas; a base individual não é incorporada ao site.
+const report = {
+  stages: [
+    {label: 'Só o primeiro contato', total: 3, notDone: 3, noReply: 0, replied: 0, reading: 'Uma barreira de vaga e dois motivos não esclarecidos.', action: 'Revisar disponibilidade e o que ficou sem resposta.'},
+    {label: 'Recebeu informações', total: 1, notDone: 0, noReply: 1, replied: 0, reading: 'Houve retomada sem resposta; há conflito entre etapa e preço enviado.', action: 'Conferir a etapa e revisar o histórico antes de nova ação.'},
+    {label: 'Recebeu o preço', total: 5, notDone: 4, noReply: 1, replied: 0, reading: 'A interação não avançou até a conversa sobre horário.', action: 'Revisar como a troca terminou e quais casos admitem retomada.'},
+    {label: 'Falou de horário', total: 2, notDone: 0, noReply: 1, replied: 1, reading: 'Um silêncio após retomada e uma barreira de horário.', action: 'Verificar a resposta da clínica e as opções de agenda.'},
+    {label: 'Agendou, sem 1ª sessão', total: 1, notDone: 1, noReply: 0, replied: 0, reading: 'Cancelamento registrado, sem justificativa esclarecida.', action: 'Revisar se cabe compreender o cancelamento e oferecer remarcação.'},
+    {label: '1ª sessão registrada', total: 4, notDone: null, noReply: null, replied: null, reading: 'Entrada na psicoterapia registrada na planilha.', action: 'Acompanhar continuidade em um registro próprio de atendimento.'}
+  ],
+  origins: [
+    {label: 'Ex-paciente', total: 7, attended: 2},
+    {label: 'Origem não identificada', total: 4, attended: 0},
+    {label: 'Indicação profissional', total: 2, attended: 2},
+    {label: 'Origem em branco', total: 2, attended: 0},
+    {label: 'Google', total: 1, attended: 0}
+  ],
+  audiences: [
+    {label: 'Adulto', total: 9, attended: 4},
+    {label: 'Infantil', total: 3, attended: 0},
+    {label: 'Adolescente', total: 2, attended: 0},
+    {label: 'Não informado', total: 2, attended: 0}
+  ],
+  months: [
+    {label: 'Agosto (desde 03/08)', total: 4, attended: 2},
+    {label: 'Setembro', total: 9, attended: 2},
+    {label: 'Outubro (até 14/10)', total: 3, attended: 0}
+  ],
+  barriers: [
+    {label: 'Causa não identificada', total: 9},
+    {label: 'Cancelou sem justificar', total: 1},
+    {label: 'Horário', total: 1},
+    {label: 'Profissional sem vaga', total: 1}
+  ]
+};
+
+const total = report.stages.reduce((sum, stage) => sum + stage.total, 0);
+const attended = report.stages[5].total;
+const withoutSession = total - attended;
+const funnel = report.stages.map((_, index) => report.stages.slice(index).reduce((sum, stage) => sum + stage.total, 0));
+const funnelLabels = ['Contato', 'Informações', 'Preço', 'Horário', 'Agendamento', '1ª sessão'];
+const followup = [
+  {label: 'Não foi feito', total: report.stages.slice(0, 5).reduce((sum, stage) => sum + stage.notDone, 0)},
+  {label: 'Feito, sem resposta', total: report.stages.slice(0, 5).reduce((sum, stage) => sum + stage.noReply, 0)},
+  {label: 'Feito, com resposta', total: report.stages.slice(0, 5).reduce((sum, stage) => sum + stage.replied, 0)}
+];
+const percent = (value, base) => (value / base).toLocaleString('pt-BR', {style: 'percent', maximumFractionDigits: 1});
+
+function makeTable(targetId, headings, rows) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'table-scroll';
+  const table = document.createElement('table');
+  table.className = 'detail-table';
+  const head = table.createTHead().insertRow();
+  headings.forEach(heading => {
+    const cell = document.createElement('th');
+    cell.scope = 'col';
+    cell.textContent = heading;
+    head.appendChild(cell);
+  });
+  const body = table.createTBody();
+  rows.forEach(values => {
+    const row = body.insertRow();
+    values.forEach(value => { row.insertCell().textContent = String(value); });
+  });
+  wrapper.appendChild(table);
+  document.getElementById(targetId).appendChild(wrapper);
+}
+
+function renderTables() {
+  makeTable('funnelData', ['Etapa', 'Registros', '% do total', 'Avanço da anterior'], funnel.map((value, index) => [funnelLabels[index], value, percent(value, total), index ? percent(value, funnel[index - 1]) : '—']));
+  makeTable('followupData', ['Follow-up', 'Registros', '% dos 12 sem sessão'], followup.map(item => [item.label, item.total, percent(item.total, withoutSession)]));
+  makeTable('barriersData', ['Situação', 'Registros'], report.barriers.map(item => [item.label, item.total]));
+  [['originData', report.origins, 'Origem / vínculo'], ['audienceData', report.audiences, 'Público'], ['timelineData', report.months, 'Mês do contato']].forEach(([target, items, heading]) => {
+    makeTable(target, [heading, 'Registros', '1ª sessão registrada'], items.map(item => [item.label, item.total, item.attended]));
+  });
+  const body = document.getElementById('tableBody');
+  report.stages.forEach((stage, index) => {
+    const row = body.insertRow();
+    row.insertCell().textContent = stage.label;
+    const count = row.insertCell();
+    count.className = 'number';
+    count.textContent = stage.total;
+    const followupCell = row.insertCell();
+    followupCell.className = 'number';
+    const tag = document.createElement('span');
+    tag.className = `tag ${index === 5 ? 'tag-green' : stage.notDone ? 'tag-amber' : 'tag-slate'}`;
+    tag.textContent = stage.notDone === null ? 'Não se aplica' : stage.notDone;
+    followupCell.appendChild(tag);
+    row.insertCell().textContent = stage.reading;
+    row.insertCell().textContent = stage.action;
+  });
+}
+
+function renderCharts() {
+  if (typeof Chart === 'undefined') {
+    document.getElementById('chartUnavailable').hidden = false;
+    document.querySelectorAll('.chart-wrap').forEach(wrapper => { wrapper.hidden = true; });
+    document.querySelectorAll('.chart-data').forEach(details => { details.open = true; });
+    return;
+  }
+  const colors = {green: '#22A06B', red: '#DE350B', amber: '#E5A100', blue: '#0065FF', purple: '#6554C0', teal: '#008DA6', grey: '#B3BAC5', light: '#DFE1E6'};
+  Chart.defaults.font.family = "'DM Sans', sans-serif";
+  Chart.defaults.font.size = 11;
+  Chart.defaults.color = '#5F6672';
+  const legend = {position: 'bottom', labels: {padding: 12, usePointStyle: true, pointStyle: 'circle'}};
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const base = {responsive: true, maintainAspectRatio: false, animation: reducedMotion ? false : {duration: 400}};
+  new Chart(document.getElementById('chartFunil'), {
+    type: 'bar',
+    data: {labels: funnelLabels, datasets: [{label: 'Registros', data: funnel, backgroundColor: [colors.blue, colors.blue, colors.amber, colors.teal, colors.teal, colors.green], borderRadius: 6, maxBarThickness: 28}]},
+    options: {...base, indexAxis: 'y', plugins: {legend: {display: false}}, scales: {x: {beginAtZero: true, max: total, ticks: {stepSize: 4}, grid: {color: '#F1F3F6'}}, y: {grid: {display: false}}}}
+  });
+  function doughnut(id, items, palette, denominator) {
+    new Chart(document.getElementById(id), {
+      type: 'doughnut',
+      data: {labels: items.map(item => item.label), datasets: [{data: items.map(item => item.total), backgroundColor: palette, borderColor: '#FFFFFF', borderWidth: 2.5}]},
+      options: {...base, cutout: '60%', plugins: {legend, tooltip: {callbacks: {label: context => `${context.label}: ${context.raw} (${percent(context.raw, denominator)})`}}}}
+    });
+  }
+  doughnut('chartFollowup', followup, [colors.red, colors.grey, colors.teal], withoutSession);
+  doughnut('chartBarreiras', report.barriers, [colors.amber, colors.grey, colors.purple, colors.teal], withoutSession);
+  function stacked(id, items) {
+    new Chart(document.getElementById(id), {
+      type: 'bar',
+      data: {labels: items.map(item => item.label), datasets: [
+        {label: '1ª sessão registrada', data: items.map(item => item.attended), backgroundColor: colors.green, borderRadius: 4, maxBarThickness: 28},
+        {label: 'Sem 1ª sessão registrada', data: items.map(item => item.total - item.attended), backgroundColor: colors.light, borderRadius: 4, maxBarThickness: 28}
+      ]},
+      options: {...base, indexAxis: 'y', plugins: {legend}, scales: {x: {beginAtZero: true, stacked: true, ticks: {stepSize: 1}, grid: {color: '#F1F3F6'}}, y: {stacked: true, grid: {display: false}}}}
+    });
+  }
+  stacked('chartOrigem', report.origins);
+  stacked('chartPublico', report.audiences);
+  new Chart(document.getElementById('chartTimeline'), {
+    type: 'bar',
+    data: {labels: report.months.map(item => item.label.replace(')', '').split(' (')), datasets: [
+      {label: 'Contatos', data: report.months.map(item => item.total), backgroundColor: colors.blue, borderRadius: 6, maxBarThickness: 32},
+      {label: '1ª sessão registrada na coorte', data: report.months.map(item => item.attended), backgroundColor: colors.green, borderRadius: 6, maxBarThickness: 32}
+    ]},
+    options: {...base, plugins: {legend}, scales: {x: {grid: {display: false}, ticks: {maxRotation: 0, autoSkip: false}}, y: {beginAtZero: true, ticks: {stepSize: 2}, grid: {color: '#F1F3F6'}}}}
+  });
+}
+
+renderTables();
+window.addEventListener('DOMContentLoaded', renderCharts, {once: true});
+</script>
+</body>
+</html>
